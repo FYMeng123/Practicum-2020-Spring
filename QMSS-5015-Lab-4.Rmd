@@ -1,0 +1,61 @@
+---
+title: "QMSS-5015-Lab-4"
+author: "Fanyu Meng"
+date: "Oct.30th, 2019"
+output:
+  html_document: default
+---
+
+## Lab 4
+
+Use GSS.2006.csv.
+```{r setup}
+g = read.csv(file.choose())
+library(plyr)
+```
+
+## 1. Run a simple regression, and interpret your results.  (Did the results fit your expectations?  Why?  Why not?)  
+
+I chose to look at how one's own highest degree (degree) and spouse's highest degree (spdeg) affect the family income (realinc). I expected that both of the two independent variables would obviously have positive effects on family income.
+
+```{r table 1}
+g$ln.realinc = log(g$realinc) 
+g$spBA = g$spdeg %in% c(3,4) #Recode the variable.
+lm1 = lm(ln.realinc ~ degree + spBA , data = g)
+summary(lm1)
+```
+
+The results strongly prove my expectations. The coefficient on one's own degree is 0.306 (highly statistically significant), which means that for each higher level of education someone holds, net of the spouse's degree, the family income will on average increase by 30.6%. The coefficient on spouse's degree is 0.593 (highly statistically significant), which means that for the spouse holding a degree higher than bachelor, net of someone's own degree, the family income will on average increase by 59.3%. 
+
+## 2. Add an interaction term to that model that you think might moderate the original relationship between X1 and X2.  Explain why you think an interaction might be present and in what direction it would work.  Explain your results.  Did it work out?  Yes?  No?  
+
+I tried to add an interaction term between these two variables. I assumed that the contribution of someone's education to the improvement of family income would be weakened by the spouse's education level, since the spouse with a higher degree may make more money and then account for more proportion in family income. Thus the interaction should have a negative direction.
+
+```{r table 2}
+
+lm2 = lm(ln.realinc ~ degree * spBA, data = g)
+summary(lm2)
+```
+
+The coefficient on one's degree is 0.326 (highly statistically significant), which means that when someone's spouse has a degree below bachelor, each higher level of education that one holds can on average improve the family income by 32.6%. The coefficient on the spouse's degree is 1.134 (highly statistically significant), which means that when someone has a degree of 0 (below highschool), if his or her spouse has a degree higher than bachelor, the family income will increase by 113.4% (compared with spouse's degree below bachelor). The coefficient on interaction is -0.21 (also highly statistically significant), which means that for people with BA+ spouses, their contributions on family income are not that significant. In this case, the family income would only increase by 0.326-0.21 = 11.6% due to each higher degree that one has. Thus the result workded just as I expected. 
+
+I also ran a partial F-test. 
+
+```{r table 3}
+
+anova(lm1, lm2)
+```
+
+The result is highly statistically significant (p-value < 0.001), showing that adding the interaction term indeed improved the model.
+
+## 3. Give me an update on your independent project.  What do you plan to investigate?  What are your hypotheses?  What date are you using?  How can we help? 
+
+I choose to investigate the factors that affect crowdfunding projects’ successful rate, and take Kickstarter as the example. 
+My hypotheses are:
+1. A project’s goal (expected money amount) has the biggest impact on its success.
+2. When project features change, the change made on a project’s duration would make the most impact on its success.
+I will use an open dataset posted on Kaggle.com. The data are collected on Kickstarter.com, with information on more than 300,000 crowdfunding projects. 
+If I cannot get or make the data in an R-readable format, perhaps I will have to use Python to analyze the data, and then maybe I will need some help on Python codes. Thank you!
+
+
+
